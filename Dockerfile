@@ -1,11 +1,12 @@
-FROM ubuntu:18.04
+FROM ubuntu:18.04 AS builder
 
-RUN apt-get -y update
-RUN apt-get -y install wget git curl
+RUN apt-get -y update && \
+    apt-get -y install wget git curl gcc cmake autoconf libtool pkg-config libmnl-dev libyaml-dev
+    
 
-# Install Golang 1.14.4
-RUN wget https://dl.google.com/go/go1.14.4.linux-amd64.tar.gz
-RUN tar -C /usr/local -zxvf go1.14.4.linux-amd64.tar.gz
+# Install Golang 1.19.1
+RUN wget https://go.dev/dl/go1.19.1.linux-amd64.tar.gz
+RUN tar -C /usr/local -zxvf go1.19.1.linux-amd64.tar.gz
 RUN mkdir -p ~/go/{bin,pkg,src}
 
 ENV GOPATH=$HOME/go
@@ -14,19 +15,20 @@ ENV PATH=$PATH:$GOPATH/bin:$GOROOT/bin
 ENV GO111MODULE=auto
 
 # Install networking toolkit
-RUN apt-get -y install iputils-ping tcpdump iptables net-tools
+#RUN apt-get -y update && \
+#    apt-get -y install iputils-ping tcpdump iptables net-tools
 
 # TODO: Download and build free5GC NFs and WebConsole
 # Required packages for user plane
-RUN apt-get -y install git gcc cmake autoconf libtool pkg-config libmnl-dev libyaml-dev
+#RUN apt-get -y install git gcc cmake autoconf libtool pkg-config libmnl-dev libyaml-dev
 RUN go get -u github.com/sirupsen/logrus
 
 # Required packages for WebConsole
 RUN apt-get -y remove cmdtest yarn
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
-RUN apt-get -y update
-RUN apt-get -y install nodejs yarn
+RUN apt-get -y update && \
+    apt-get -y install nodejs yarn
 
 # Build all NFs at once
 WORKDIR /root
@@ -40,3 +42,17 @@ RUN git checkout v1.1.0
 WORKDIR /root/free5gc
 RUN make webconsole
 
+# FINAL STAGE
+FROM ubuntu:18.04
+COPY --from=builder /root/free5gc/bin /root/free5gc/bin
+COPY --from=builder /root/free5gc/config /root/free5gc/config
+COPY --from=builder /root/free5gc/webconsole/bin /root/free5gc/webconsole/bin
+COPY --from=builder /root/free5gc/webconsole /root/free5gc/webconsole
+COPY --from=builder /root/free5gc/NFs/upf/build /root/free5gc/NFs/upf/build
+
+# install network toolkit, require library
+RUN apt update && \
+    apt-get -y install iputils-ping tcpdump iptables net-tools && \
+    apt-get -y install libtool libmnl-dev libyaml-dev && \
+    rm -rf /var/lib/apt/lists/*
+WORKDIR /root/free5gc
