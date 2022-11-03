@@ -12,3 +12,4 @@ kubectl apply -f ausf
 kubectl apply -f nssf
 kubectl apply -f smf
 
+kubectl apply -f dn

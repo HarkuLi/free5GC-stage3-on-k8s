@@ -12,3 +12,4 @@ kubectl delete -f nrf
 kubectl delete -f webui
 kubectl delete -f mongo
 
+kubectl delete -f dn
