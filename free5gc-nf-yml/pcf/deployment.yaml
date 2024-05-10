@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: pcf
-          image: free5gc-build:v3.1.0
+          image: harku/free5gc:v3.1.0
           imagePullPolicy: IfNotPresent
           command: ["/bin/bash"]
           args: ["-c", "./bin/pcf -c ./config/pcfcfg.yaml"]

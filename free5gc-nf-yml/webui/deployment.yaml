@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: webui
-          image: free5gc-build:v3.1.0
+          image: harku/free5gc:v3.1.0
           imagePullPolicy: IfNotPresent
           command: ["/bin/bash"]
           args: ["-c", "cd webconsole && ./bin/webconsole -c ../config/webuicfg.yaml"]

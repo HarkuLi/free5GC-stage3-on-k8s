@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: udm
-          image: free5gc-build:v3.1.0
+          image: harku/free5gc:v3.1.0
           imagePullPolicy: IfNotPresent
           command: ["/bin/bash"]
           args: ["-c", "./bin/udm -c ./config/udmcfg.yaml"]

@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: ausf
-          image: free5gc-build:v3.1.0
+          image: harku/free5gc:v3.1.0
           imagePullPolicy: IfNotPresent
           command: ["/bin/bash"]
           args: ["-c", "./bin/ausf -c ./config/ausfcfg.yaml"]

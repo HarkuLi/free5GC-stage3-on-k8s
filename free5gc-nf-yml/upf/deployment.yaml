@@ -20,7 +20,7 @@ spec:
         - name: upf
           securityContext:
             privileged: true
-          image: free5gc-build:v3.1.0
+          image: harku/free5gc:v3.1.0
           imagePullPolicy: IfNotPresent
           command: ["/bin/bash"]
           args: ["-c", "cd NFs/upf/build && sysctl -w net.ipv4.ip_forward=1 && iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE && ./bin/free5gc-upfd -c ../config/upfcfg.yaml"]
